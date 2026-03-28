@@ -1,5 +1,6 @@
 (function () {
-  const API = '/api';
+  /** 後端 API 固定連到本機（網頁若架在別處如 GitHub Pages 仍可呼叫 localhost） */
+  const API = 'http://localhost:8964/api';
   const curEl = document.getElementById('cur');
   const statusEl = document.getElementById('status');
   const inputCoords = document.getElementById('inputCoords');

@@ -12,6 +12,7 @@ from typing import Optional
 from urllib.request import urlopen
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -20,6 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title="iOS 座標模擬", description="透過網頁地圖設定 iPhone 模擬位置")
+
+# 前端若架在別的網址仍會 fetch http://localhost/api，需允許跨來源
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # tunneld 位址，用於自動取得 RSD (tunnel-address, tunnel-port)
 TUNNELD_URL = "http://127.0.0.1:49151/"
@@ -276,6 +285,16 @@ async def set_location(body: LocationSet):
 
 # 靜態檔案（前端）
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/app.js")
+async def app_js():
+    return FileResponse(STATIC_DIR / "app.js", media_type="application/javascript")
+
+
+@app.get("/app.css")
+async def app_css():
+    return FileResponse(STATIC_DIR / "app.css", media_type="text/css")
 
 
 @app.get("/")
